@@ -7,11 +7,11 @@ export class Iter<T> implements Iterable<T> {
 
   [Symbol.iterator](): Iterator<T> {
     return {
-      next: () => this.#iter.next(),
+      next: () => this.next(),
     };
   }
 
-  next() {
+  next(): IteratorResult<T> {
     return this.#iter.next();
   }
 
@@ -67,14 +67,16 @@ class IterFilter<T> extends Iter<T> {
 
   [Symbol.iterator](): Iterator<T> {
     return {
-      next: () => {
-        const value = this.#iter.find(this.#f);
-        if (value) {
-          return { value, done: false };
-        }
-
-        return { value: undefined, done: true };
-      },
+      next: () => this.next(),
     };
+  }
+
+  next(): IteratorResult<T> {
+    const value = this.#iter.find(this.#f);
+    if (value) {
+      return { value, done: false };
+    }
+
+    return { value: undefined, done: true };
   }
 }
