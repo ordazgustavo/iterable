@@ -3,7 +3,7 @@ import { bench, runBenchmarks } from "https://deno.land/std/testing/bench.ts";
 
 import { Iter } from "../mod.ts";
 
-const isPair = (x: number) => x % 2 === 0;
+const isEven = (x: number) => x % 2 === 0;
 const double = (x: number) => x * 2;
 
 Deno.test({
@@ -79,7 +79,7 @@ Deno.test({
     const base = [1, 2, 3, 4, 5];
     const iter = new Iter(base);
 
-    assertEquals([2, 4], iter.filter(isPair).collect());
+    assertEquals([2, 4], iter.filter(isEven).collect());
   },
 });
 
@@ -91,7 +91,7 @@ Deno.test({
 
     assertEquals(
       [4],
-      iter.filter(isPair).filter((item) => item === 4).collect(),
+      iter.filter(isEven).filter((item) => item === 4).collect(),
     );
   },
 });
@@ -106,7 +106,7 @@ Deno.test({
       name: "Iter.prototype.filter",
       func: (b) => {
         b.start();
-        iter.filter(isPair).collect();
+        iter.filter(isEven).collect();
         b.stop();
       },
       runs: 10_000,
@@ -116,7 +116,7 @@ Deno.test({
       name: "Array.prototype.filter",
       func: (b) => {
         b.start();
-        data.filter(isPair);
+        data.filter(isEven);
         b.stop();
       },
       runs: 10_000,
@@ -153,7 +153,7 @@ Deno.test({
     const base = [1, 2, 3, 4, 5];
     const iter = new Iter(base);
 
-    assertEquals(6, iter.filter(isPair).fold(0, (acc, item) => item + acc));
+    assertEquals(6, iter.filter(isEven).fold(0, (acc, item) => item + acc));
   },
 });
 
@@ -205,7 +205,7 @@ Deno.test({
     const base = [1, 2, 3, 4, 5];
     const iter = new Iter(base);
 
-    assertEquals(6, iter.filter(isPair).reduce((acc, item) => item + acc));
+    assertEquals(6, iter.filter(isEven).reduce((acc, item) => item + acc));
   },
 });
 
@@ -261,12 +261,12 @@ Deno.test({
       Array.from(new Iter(base).map(double).map(double)),
     );
     assertEquals(
-      base.map(double).map(double).filter(isPair),
-      Array.from(new Iter(base).map(double).map(double).filter(isPair)),
+      base.map(double).map(double).filter(isEven),
+      Array.from(new Iter(base).map(double).map(double).filter(isEven)),
     );
     assertEquals(
-      base.filter(isPair).map(double),
-      Array.from(new Iter(base).filter(isPair).map(double)),
+      base.filter(isEven).map(double),
+      Array.from(new Iter(base).filter(isEven).map(double)),
     );
   },
 });
@@ -337,19 +337,19 @@ Deno.test({
   name: "Filter map collection into another collection",
   fn: () => {
     const base = [1, 2, 3, 4, 5];
-    const doublePairs = (item: number) => item % 2 === 0 ? item * 2 : undefined;
+    const doubleEvens = (item: number) => item % 2 === 0 ? item * 2 : undefined;
 
     assertEquals(
       [4, 8],
-      new Iter(base).filterMap(doublePairs).collect(),
+      new Iter(base).filterMap(doubleEvens).collect(),
     );
     assertEquals(
-      base.filter(isPair).map(double),
-      Array.from(new Iter(base).filterMap(doublePairs)),
+      base.filter(isEven).map(double),
+      Array.from(new Iter(base).filterMap(doubleEvens)),
     );
     assertEquals(
-      new Iter(base).filter(isPair).map(double).collect(),
-      Array.from(new Iter(base).filterMap(doublePairs)),
+      new Iter(base).filter(isEven).map(double).collect(),
+      Array.from(new Iter(base).filterMap(doubleEvens)),
     );
   },
 });
@@ -359,13 +359,13 @@ Deno.test({
   fn: async () => {
     const length = 1_000;
     const data = Array.from({ length }).map((_, i) => i);
-    const doublePairs = (item: number) => item % 2 === 0 ? item * 2 : undefined;
+    const doubleEvens = (item: number) => item % 2 === 0 ? item * 2 : undefined;
 
     bench({
       name: "Iter.prototype.filterMap",
       func: (b) => {
         b.start();
-        new Iter(data).filterMap(doublePairs).collect();
+        new Iter(data).filterMap(doubleEvens).collect();
         b.stop();
       },
       runs: 10_000,
@@ -388,7 +388,7 @@ Deno.test({
       name: "Array.prototype.filter + Array.prototype.map",
       func: (b) => {
         b.start();
-        data.filter(isPair).map(double);
+        data.filter(isEven).map(double);
         b.stop();
       },
       runs: 10_000,
