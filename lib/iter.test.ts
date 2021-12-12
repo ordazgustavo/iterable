@@ -337,11 +337,11 @@ Deno.test({
   name: "Filter map collection into another collection",
   fn: () => {
     const base = [1, 2, 3, 4, 5];
-    const doublePairs = (item: number) => item % 2 === 0 ? item * 2 : null;
+    const doublePairs = (item: number) => item % 2 === 0 ? item * 2 : undefined;
 
     assertEquals(
       [4, 8],
-      Array.from(new Iter(base).filterMap(doublePairs)),
+      new Iter(base).filterMap(doublePairs).collect(),
     );
     assertEquals(
       base.filter(isPair).map(double),
@@ -359,7 +359,7 @@ Deno.test({
   fn: async () => {
     const length = 1_000;
     const data = Array.from({ length }).map((_, i) => i);
-    const doublePairs = (item: number) => item % 2 === 0 ? item * 2 : null;
+    const doublePairs = (item: number) => item % 2 === 0 ? item * 2 : undefined;
 
     bench({
       name: "Iter.prototype.filterMap",

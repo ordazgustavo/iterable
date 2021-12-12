@@ -138,9 +138,10 @@ class IterFilterMap<T, U> {
 
   next(): IteratorResult<U> {
     const value = this.#iter.findMap(this.#f);
-    // Branchless version improves performance dramatically
-    // @ts-expect-error Not using if statemets confuses TS
-    return { value, done: Boolean(value) };
+    if (value) {
+      return { value, done: false };
+    }
+    return { value: undefined, done: true };
   }
 }
 
