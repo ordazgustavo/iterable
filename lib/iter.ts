@@ -52,6 +52,10 @@ export class Iter<T> implements Iterable<T> {
 
     return null;
   }
+
+  take(n: number): IterTake<T> {
+    return new IterTake(this, n);
+  }
 }
 
 type FilterFn<T> = (x: T) => boolean;
@@ -98,6 +102,26 @@ class IterMap<T, U> {
     if (!next.done) {
       return { value: this.#f(next.value), done: false };
     }
+    return { value: undefined, done: true };
+  }
+}
+
+class IterTake<T> extends Iter<T> {
+  #iter;
+  #n;
+
+  constructor(iter: Iter<T>, n: number) {
+    super(iter);
+    this.#iter = iter;
+    this.#n = n;
+  }
+
+  next(): IteratorResult<T> {
+    if (this.#n !== 0) {
+      this.#n -= 1;
+      return this.#iter.next();
+    }
+
     return { value: undefined, done: true };
   }
 }
