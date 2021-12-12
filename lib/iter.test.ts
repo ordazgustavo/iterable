@@ -3,7 +3,8 @@ import { bench, runBenchmarks } from "https://deno.land/std/testing/bench.ts";
 
 import { Iter } from "../mod.ts";
 
-export const isPair = (x: number) => x % 2 === 0;
+const isPair = (x: number) => x % 2 === 0;
+const double = (x: number) => x * 2;
 
 Deno.test({
   name: "Iterates with for-of",
@@ -48,7 +49,7 @@ Deno.test({
     const last = (item: number) => item === length - 1;
 
     bench({
-      name: "Iter.find",
+      name: "Iter.prototype.find",
       func: (b) => {
         b.start();
         iter.find(last);
@@ -164,7 +165,7 @@ Deno.test({
     const iter = new Iter(data);
 
     bench({
-      name: "Iter.fold",
+      name: "Iter.prototype.fold",
       func: (b) => {
         b.start();
         iter.fold(0, (acc, item) => acc + item);
@@ -216,7 +217,7 @@ Deno.test({
     const iter = new Iter(data);
 
     bench({
-      name: "Iter.reduce",
+      name: "Iter.prototype.reduce",
       func: (b) => {
         b.start();
         iter.reduce((acc, item) => acc + item);
@@ -230,6 +231,78 @@ Deno.test({
       func: (b) => {
         b.start();
         data.reduce((acc, item) => acc + item, 0);
+        b.stop();
+      },
+      runs: 10_000,
+    });
+    const { results } = await runBenchmarks();
+    const [first, second] = results;
+    assert(first.measuredRunsAvgMs < second.measuredRunsAvgMs);
+  },
+});
+
+Deno.test({
+  name: "Map a collection into another",
+  fn: () => {
+    const base = [1, 2, 3, 4, 5];
+    const iter = new Iter(base);
+
+    assertEquals(base.map(double), Array.from(iter.map(double)));
+  },
+});
+
+Deno.test({
+  name: "Map can be chained",
+  fn: () => {
+    const base = [1, 2, 3, 4, 5];
+
+    assertEquals(
+      base.map(double).map(double),
+      Array.from(new Iter(base).map(double).map(double)),
+    );
+    assertEquals(
+      base.map(double).map(double).filter(isPair),
+      Array.from(new Iter(base).map(double).map(double).filter(isPair)),
+    );
+    assertEquals(
+      base.filter(isPair).map(double),
+      Array.from(new Iter(base).filter(isPair).map(double)),
+    );
+  },
+});
+
+Deno.test({
+  name: "Map a collection into collection of another type",
+  fn: () => {
+    const base = [1, 2, 3, 4, 5];
+    const iter = new Iter(base);
+
+    assertEquals(base.map(String), Array.from(iter.map(String)));
+  },
+});
+
+Deno.test({
+  name: "Map benchmark",
+  fn: async () => {
+    const length = 1_000;
+    const data = Array.from({ length }).map((_, i) => i);
+    const iter = new Iter(data);
+
+    bench({
+      name: "Iter.prototype.map",
+      func: (b) => {
+        b.start();
+        iter.map(double);
+        b.stop();
+      },
+      runs: 10_000,
+    });
+
+    bench({
+      name: "Array.prototype.map",
+      func: (b) => {
+        b.start();
+        data.map(double);
         b.stop();
       },
       runs: 10_000,

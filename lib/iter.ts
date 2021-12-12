@@ -15,20 +15,15 @@ export class Iter<T> implements Iterable<T> {
     return this.#iter.next();
   }
 
-  collect(): T[] {
-    const acc: T[] = [];
-    for (const item of this) {
-      acc.push(item);
-    }
-
-    return acc;
+  collect(): Array<T> {
+    return Array.from(this);
   }
 
-  filter(f: (x: T) => boolean): IterFilter<T> {
+  filter(f: FilterFn<T>): IterFilter<T> {
     return new IterFilter(this, f);
   }
 
-  find(f: (x: T) => boolean): T | null {
+  find(f: FilterFn<T>): T | null {
     for (const item of this) {
       if (f(item)) return item;
     }
@@ -45,6 +40,10 @@ export class Iter<T> implements Iterable<T> {
     return accum;
   }
 
+  map<U>(f: MapFn<T, U>): Iter<U> {
+    return new Iter(new IterMap(this, f));
+  }
+
   reduce(f: (acum: T, x: T) => T): T | null {
     const first = this.next();
     if (!first.done) {
@@ -55,20 +54,16 @@ export class Iter<T> implements Iterable<T> {
   }
 }
 
+type FilterFn<T> = (x: T) => boolean;
+
 class IterFilter<T> extends Iter<T> {
   #iter;
   #f;
 
-  constructor(iter: Iter<T>, f: (x: T) => boolean) {
+  constructor(iter: Iter<T>, f: FilterFn<T>) {
     super(iter);
     this.#iter = iter;
     this.#f = f;
-  }
-
-  [Symbol.iterator](): Iterator<T> {
-    return {
-      next: () => this.next(),
-    };
   }
 
   next(): IteratorResult<T> {
@@ -77,6 +72,32 @@ class IterFilter<T> extends Iter<T> {
       return { value, done: false };
     }
 
+    return { value: undefined, done: true };
+  }
+}
+
+type MapFn<T, U> = (x: T) => U;
+
+class IterMap<T, U> {
+  #iter;
+  #f;
+
+  constructor(iter: Iter<T>, f: MapFn<T, U>) {
+    this.#iter = iter;
+    this.#f = f;
+  }
+
+  [Symbol.iterator](): Iterator<U> {
+    return {
+      next: () => this.next(),
+    };
+  }
+
+  next(): IteratorResult<U> {
+    const next = this.#iter.next();
+    if (!next.done) {
+      return { value: this.#f(next.value), done: false };
+    }
     return { value: undefined, done: true };
   }
 }
