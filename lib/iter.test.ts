@@ -292,7 +292,7 @@ Deno.test({
       name: "Iter.prototype.map",
       func: (b) => {
         b.start();
-        iter.map(double);
+        iter.map(double).collect();
         b.stop();
       },
       runs: 10_000,
