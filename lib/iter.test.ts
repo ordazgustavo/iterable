@@ -332,3 +332,72 @@ Deno.test({
     assertEquals([1, 2, 3, 4, 5], Array.from(iter.take(6)));
   },
 });
+
+Deno.test({
+  name: "Filter map collection into another collection",
+  fn: () => {
+    const base = [1, 2, 3, 4, 5];
+    const doublePairs = (item: number) => item % 2 === 0 ? item * 2 : null;
+
+    assertEquals(
+      [4, 8],
+      Array.from(new Iter(base).filterMap(doublePairs)),
+    );
+    assertEquals(
+      base.filter(isPair).map(double),
+      Array.from(new Iter(base).filterMap(doublePairs)),
+    );
+    assertEquals(
+      new Iter(base).filter(isPair).map(double).collect(),
+      Array.from(new Iter(base).filterMap(doublePairs)),
+    );
+  },
+});
+
+Deno.test({
+  name: "Filter map benchmark",
+  fn: async () => {
+    const length = 1_000;
+    const data = Array.from({ length }).map((_, i) => i);
+    const doublePairs = (item: number) => item % 2 === 0 ? item * 2 : null;
+
+    bench({
+      name: "Iter.prototype.filterMap",
+      func: (b) => {
+        b.start();
+        new Iter(data).filterMap(doublePairs).collect();
+        b.stop();
+      },
+      runs: 10_000,
+    });
+
+    bench({
+      name: "Array.prototype.reduce",
+      func: (b) => {
+        b.start();
+        data.reduce<number[]>((acc, curr) => {
+          if (curr % 2 === 0) acc.push(curr);
+          return acc;
+        }, []);
+        b.stop();
+      },
+      runs: 10_000,
+    });
+
+    bench({
+      name: "Array.prototype.filter + Array.prototype.map",
+      func: (b) => {
+        b.start();
+        data.filter(isPair).map(double);
+        b.stop();
+      },
+      runs: 10_000,
+    });
+    const { results } = await runBenchmarks();
+    const [first, second, third] = results;
+    assert(
+      first.measuredRunsAvgMs < second.measuredRunsAvgMs &&
+        first.measuredRunsAvgMs < third.measuredRunsAvgMs,
+    );
+  },
+});

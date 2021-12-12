@@ -23,12 +23,25 @@ export class Iter<T> implements Iterable<T> {
     return new IterFilter(this, f);
   }
 
+  filterMap<U>(f: FilterMapFn<T, U>): Iter<U> {
+    return new Iter(new IterFilterMap(this, f));
+  }
+
   find(f: FilterFn<T>): T | null {
     for (const item of this) {
       if (f(item)) return item;
     }
 
     return null;
+  }
+
+  findMap<U>(f: (x: T) => U | undefined): U | undefined {
+    for (const item of this) {
+      const result = f(item);
+      if (result) return result;
+    }
+
+    return undefined;
   }
 
   fold<B>(init: B, f: (accum: B, x: T) => B): B {
@@ -103,6 +116,31 @@ class IterMap<T, U> {
       return { value: this.#f(next.value), done: false };
     }
     return { value: undefined, done: true };
+  }
+}
+
+type FilterMapFn<T, U> = (x: T) => U | undefined;
+
+class IterFilterMap<T, U> {
+  #iter;
+  #f;
+
+  constructor(iter: Iter<T>, f: FilterMapFn<T, U>) {
+    this.#iter = iter;
+    this.#f = f;
+  }
+
+  [Symbol.iterator](): Iterator<U> {
+    return {
+      next: () => this.next(),
+    };
+  }
+
+  next(): IteratorResult<U> {
+    const value = this.#iter.findMap(this.#f);
+    // Branchless version improves performance dramatically
+    // @ts-expect-error Not using if statemets confuses TS
+    return { value, done: Boolean(value) };
   }
 }
 
