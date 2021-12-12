@@ -1,3 +1,5 @@
+import { Enumerate, Item } from "./adapters/enumerate.ts";
+
 export class Iter<T> implements Iterable<T> {
   #iter;
 
@@ -17,6 +19,10 @@ export class Iter<T> implements Iterable<T> {
 
   collect(): Array<T> {
     return Array.from(this);
+  }
+
+  enumerate(): Iter<Item<T>> {
+    return new Iter(new Enumerate(this));
   }
 
   filter(f: FilterFn<T>): IterFilter<T> {
