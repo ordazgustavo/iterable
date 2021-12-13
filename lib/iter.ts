@@ -1,4 +1,5 @@
 import { Enumerate, Item } from "./adapters/enumerate.ts";
+import { Filter, FilterFn } from "./adapters/filter.ts";
 
 export class Iter<T> implements Iterable<T> {
   #iter;
@@ -25,8 +26,8 @@ export class Iter<T> implements Iterable<T> {
     return new Iter(new Enumerate(this));
   }
 
-  filter(f: FilterFn<T>): IterFilter<T> {
-    return new IterFilter(this, f);
+  filter(f: FilterFn<T>): Iter<T> {
+    return new Iter(new Filter(this, f));
   }
 
   filterMap<U>(f: FilterMapFn<T, U>): Iter<U> {
@@ -74,28 +75,6 @@ export class Iter<T> implements Iterable<T> {
 
   take(n: number): IterTake<T> {
     return new IterTake(this, n);
-  }
-}
-
-type FilterFn<T> = (x: T) => boolean;
-
-class IterFilter<T> extends Iter<T> {
-  #iter;
-  #f;
-
-  constructor(iter: Iter<T>, f: FilterFn<T>) {
-    super(iter);
-    this.#iter = iter;
-    this.#f = f;
-  }
-
-  next(): IteratorResult<T> {
-    const value = this.#iter.find(this.#f);
-    if (value) {
-      return { value, done: false };
-    }
-
-    return { value: undefined, done: true };
   }
 }
 
