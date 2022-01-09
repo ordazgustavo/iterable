@@ -1,5 +1,5 @@
-import { assert, assertEquals } from "https://deno.land/std/testing/asserts.ts";
-import { bench, runBenchmarks } from "https://deno.land/std/testing/bench.ts";
+import { assert, assertEquals } from "std/testing/asserts.ts";
+import { bench, runBenchmarks } from "std/testing/bench.ts";
 
 import { Iter } from "../mod.ts";
 
