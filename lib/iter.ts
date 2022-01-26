@@ -1,5 +1,6 @@
 import { Enumerate, Item } from "./adapters/enumerate.ts";
 import { Filter, FilterFn } from "./adapters/filter.ts";
+import { IterMap, MapFn } from "./adapters/map.ts";
 
 export class Iter<T> implements Iterable<T> {
   #iter;
@@ -75,32 +76,6 @@ export class Iter<T> implements Iterable<T> {
 
   take(n: number): IterTake<T> {
     return new IterTake(this, n);
-  }
-}
-
-type MapFn<T, U> = (x: T) => U;
-
-class IterMap<T, U> {
-  #iter;
-  #f;
-
-  constructor(iter: Iter<T>, f: MapFn<T, U>) {
-    this.#iter = iter;
-    this.#f = f;
-  }
-
-  [Symbol.iterator](): Iterator<U> {
-    return {
-      next: () => this.next(),
-    };
-  }
-
-  next(): IteratorResult<U> {
-    const next = this.#iter.next();
-    if (!next.done) {
-      return { value: this.#f(next.value), done: false };
-    }
-    return { value: undefined, done: true };
   }
 }
 

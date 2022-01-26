@@ -2,8 +2,7 @@ import { assert, assertEquals } from "std/testing/asserts.ts";
 import { bench, runBenchmarks } from "std/testing/bench.ts";
 
 import { Iter } from "../../mod.ts";
-
-const isEven = (x: number) => x % 2 === 0;
+import { isEven } from "../test-utils.ts";
 
 Deno.test({
   name: "Filters items from the collection",
