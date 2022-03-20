@@ -2,7 +2,7 @@ import type { Iter } from "../iter.ts";
 
 export type Item<T> = [index: number, item: T];
 
-export class Enumerate<T> {
+export class Enumerate<T> implements Iterable<Item<T>> {
   #iter;
   #count = 0;
 

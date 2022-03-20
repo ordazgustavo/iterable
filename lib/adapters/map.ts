@@ -2,7 +2,7 @@ import type { Iter } from "../iter.ts";
 
 export type MapFn<T, U> = (x: T) => U;
 
-export class IterMap<T, U> {
+export class IterMap<T, U> implements Iterable<U> {
   #iter;
   #f;
 

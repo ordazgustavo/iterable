@@ -2,7 +2,7 @@ import type { Iter } from "../../mod.ts";
 
 export type FilterMapFn<T, U> = (x: T) => U | undefined;
 
-export class FilterMap<T, U> {
+export class FilterMap<T, U> implements Iterable<U> {
   #iter;
   #f;
 

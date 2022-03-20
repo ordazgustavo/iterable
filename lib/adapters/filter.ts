@@ -2,7 +2,7 @@ import type { Iter } from "../iter.ts";
 
 export type FilterFn<T> = (x: T) => boolean;
 
-export class Filter<T> {
+export class Filter<T> implements Iterable<T> {
   #iter;
   #f;
 
