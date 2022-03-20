@@ -72,6 +72,19 @@ Deno.test({
 });
 
 Deno.test({
+  name: "Finds and transform an item in the collection",
+  fn: () => {
+    const base = ["lol", "NaN", "2", "5"];
+    const iter = new Iter(base);
+
+    assertEquals(
+      2,
+      iter.findMap((item) => !isNaN(Number(item)) ? Number(item) : undefined),
+    );
+  },
+});
+
+Deno.test({
   name: "Fold items into an accumulator",
   fn: () => {
     const base = [1, 2, 3, 4, 5];
