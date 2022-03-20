@@ -10,17 +10,26 @@ Deno.test({
     const base = [1, 2, 3, 4, 5];
     const doubleEvens = (item: number) => item % 2 === 0 ? item * 2 : undefined;
 
+    const result = [4, 8];
+
     assertEquals(
-      [4, 8],
+      result,
       new Iter(base).filterMap(doubleEvens).collect(),
     );
     assertEquals(
-      base.filter(isEven).map(double),
-      Array.from(new Iter(base).filterMap(doubleEvens)),
+      result,
+      new Iter(base).filterMap(doubleEvens).collect(),
     );
     assertEquals(
-      new Iter(base).filter(isEven).map(double).collect(),
-      Array.from(new Iter(base).filterMap(doubleEvens)),
+      result,
+      new Iter(base).filterMap(doubleEvens).collect(),
+    );
+    assertEquals(
+      result,
+      base.reduce<number[]>((acc, curr) => {
+        if (curr % 2 === 0) acc.push(curr * 2);
+        return acc;
+      }, []),
     );
   },
 });
@@ -47,7 +56,7 @@ Deno.test({
       func: (b) => {
         b.start();
         data.reduce<number[]>((acc, curr) => {
-          if (curr % 2 === 0) acc.push(curr);
+          if (curr % 2 === 0) acc.push(curr * 2);
           return acc;
         }, []);
         b.stop();
@@ -67,8 +76,12 @@ Deno.test({
     const { results } = await runBenchmarks();
     const [first, second, third] = results;
     assert(
-      first.measuredRunsAvgMs < second.measuredRunsAvgMs &&
-        first.measuredRunsAvgMs < third.measuredRunsAvgMs,
+      first.measuredRunsAvgMs < second.measuredRunsAvgMs,
+      "Array.prototype.reduce is faster",
+    );
+    assert(
+      first.measuredRunsAvgMs < third.measuredRunsAvgMs,
+      "Array.prototype.filter + Array.prototype.map is faster",
     );
   },
 });

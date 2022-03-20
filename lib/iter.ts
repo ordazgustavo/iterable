@@ -48,7 +48,7 @@ export class Iter<T> implements Iterable<T> {
   findMap<U>(f: (x: T) => U | undefined): U | undefined {
     for (const item of this) {
       const result = f(item);
-      if (result) return result;
+      if (typeof result !== "undefined") return result;
     }
 
     return undefined;
