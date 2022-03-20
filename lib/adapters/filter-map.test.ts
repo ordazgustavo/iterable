@@ -42,7 +42,7 @@ Deno.test({
     const doubleEvens = (item: number) => item % 2 === 0 ? item * 2 : undefined;
 
     bench({
-      name: "Iter.prototype.filterMap",
+      name: "FilterMap: Iter.prototype.filterMap",
       func: (b) => {
         b.start();
         new Iter(data).filterMap(doubleEvens).collect();
@@ -52,7 +52,7 @@ Deno.test({
     });
 
     bench({
-      name: "Array.prototype.reduce",
+      name: "FilterMap: Array.prototype.reduce",
       func: (b) => {
         b.start();
         data.reduce<number[]>((acc, curr) => {
@@ -65,7 +65,7 @@ Deno.test({
     });
 
     bench({
-      name: "Array.prototype.filter + Array.prototype.map",
+      name: "FilterMap: Array.prototype.filter + Array.prototype.map",
       func: (b) => {
         b.start();
         data.filter(isEven).map(double);

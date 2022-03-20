@@ -52,7 +52,7 @@ Deno.test({
     const iter = new Iter(data);
 
     bench({
-      name: "Iter.prototype.map",
+      name: "Map: Iter.prototype.map",
       func: (b) => {
         b.start();
         iter.map(double).collect();
@@ -62,7 +62,7 @@ Deno.test({
     });
 
     bench({
-      name: "Array.prototype.map",
+      name: "Map: Array.prototype.map",
       func: (b) => {
         b.start();
         data.map(double);

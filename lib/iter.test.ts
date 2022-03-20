@@ -47,7 +47,7 @@ Deno.test({
     const last = (item: number) => item === length - 1;
 
     bench({
-      name: "Iter.prototype.find",
+      name: "Find: Iter.prototype.find",
       func: (b) => {
         b.start();
         iter.find(last);
@@ -57,7 +57,7 @@ Deno.test({
     });
 
     bench({
-      name: "Array.prototype.find",
+      name: "Find: Array.prototype.find",
       func: (b) => {
         b.start();
         data.find(last);
@@ -122,7 +122,7 @@ Deno.test({
     const iter = new Iter(data);
 
     bench({
-      name: "Iter.prototype.fold",
+      name: "Fold: Iter.prototype.fold",
       func: (b) => {
         b.start();
         iter.fold(0, (acc, item) => acc + item);
@@ -132,7 +132,7 @@ Deno.test({
     });
 
     bench({
-      name: "Array.prototype.reduce",
+      name: "Fold: Array.prototype.reduce",
       func: (b) => {
         b.start();
         data.reduce((acc, item) => acc + item, 0);
@@ -174,7 +174,7 @@ Deno.test({
     const iter = new Iter(data);
 
     bench({
-      name: "Iter.prototype.reduce",
+      name: "Reduce: Iter.prototype.reduce",
       func: (b) => {
         b.start();
         iter.reduce((acc, item) => acc + item);
@@ -184,7 +184,7 @@ Deno.test({
     });
 
     bench({
-      name: "Array.prototype.reduce",
+      name: "Reduce: Array.prototype.reduce",
       func: (b) => {
         b.start();
         data.reduce((acc, item) => acc + item, 0);

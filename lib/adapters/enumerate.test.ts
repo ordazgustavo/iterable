@@ -43,7 +43,7 @@ Deno.test({
     const iter = new Iter(data);
 
     bench({
-      name: "Iter.prototype.enumerate",
+      name: "Enumerate: Iter.prototype.enumerate",
       func: (b) => {
         b.start();
         iter.enumerate().collect();
@@ -53,7 +53,7 @@ Deno.test({
     });
 
     bench({
-      name: "Array.prototype.map",
+      name: "Enumerate: Array.prototype.map",
       func: (b) => {
         b.start();
         data.map(enumerate);

@@ -34,7 +34,7 @@ Deno.test({
     const iter = new Iter(data);
 
     bench({
-      name: "Iter.prototype.filter",
+      name: "Filter: Iter.prototype.filter",
       func: (b) => {
         b.start();
         iter.filter(isEven).collect();
@@ -44,7 +44,7 @@ Deno.test({
     });
 
     bench({
-      name: "Array.prototype.filter",
+      name: "Filter: Array.prototype.filter",
       func: (b) => {
         b.start();
         data.filter(isEven);
